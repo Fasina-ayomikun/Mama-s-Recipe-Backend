@@ -15,6 +15,8 @@ app.use("/assets", express.static("assets"));
 app.use(
   cors(
   {
+    
+    origin: process.env.FRONTEND_LINK,
     credentials: true,
   })
 );

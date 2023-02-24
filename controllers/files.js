@@ -14,7 +14,7 @@ const uploadImage = async (req, res) => {
     if (!fileImage.mimetype.startsWith("image")) {
       throw new BadRequestError("Please upload an image");
     }
-    const maxSize = 1024 * 1024;
+    const maxSize = 1024 * 1024 * 20;
     if (fileImage.size > maxSize) {
       throw new BadRequestError("Please upload an image smaller than 1MB");
     }

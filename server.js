@@ -13,7 +13,10 @@ app.use(fileUploader());
 app.use("/assets", express.static("assets"));
 
 app.use(
-  cors()
+  cors(
+  {
+    credentials: true,
+  })
 );
 app.post("/", (req, res) => {
   res.json({ msg: "msg" });

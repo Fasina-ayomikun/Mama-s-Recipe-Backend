@@ -8,7 +8,6 @@ const addCookies = ({ res, user }) => {
     secure: process.env.NODE_ENV === "production",
     expires: new Date(Date.now() +  maxAge),
     signed: true,
-    domain:'.vercel.app',
   });
 };
 module.exports = {

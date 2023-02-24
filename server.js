@@ -13,10 +13,7 @@ app.use(fileUploader());
 app.use("/assets", express.static("assets"));
 
 app.use(
-  cors({
-    origin: process.env.FRONTEND_LINK,
-    credentials: true,
-  })
+  cors()
 );
 app.post("/", (req, res) => {
   res.json({ msg: "msg" });

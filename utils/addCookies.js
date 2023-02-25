@@ -8,7 +8,7 @@ const addCookies = ({ res, user }) => {
     secure: process.env.NODE_ENV === "production",
     expires: new Date(Date.now() +  maxAge),
     signed: true,
-    domain: process.env.FRONTEND_LINK,
+    domain: 'https://mama-s-recipe.vercel.app',
   });
 };
 module.exports = {

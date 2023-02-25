@@ -20,10 +20,8 @@ app.use(fileUploader({ useTempFiles: true }));
 app.use("/assets", express.static("assets"));
 
 app.use(
-
-  cors(
-  {
-        origin: process.env.FRONTEND_LINK,
+  cors({
+    origin: process.env.FRONTEND_LINK,
     credentials: true,
   })
 );

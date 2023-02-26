@@ -10,6 +10,7 @@ const addCookies = ({ res, user }) => {
     expires: new Date(Date.now() +  maxAge),
     signed: true,
     domain: 'https://mama-s-recipe.vercel.app',
+    sameSite:None,
   });
 };
 module.exports = {

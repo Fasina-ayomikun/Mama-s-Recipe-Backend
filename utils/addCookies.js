@@ -6,7 +6,7 @@ const addCookies = ({ res, user }) => {
   const maxAge = 60 * 60 * 1000 * 24;
   res.cookie("token", token, {
     httpOnly:true,
-    secure:true,
+    secure: process.env.NODE_ENV === 'production',
     expires: new Date(Date.now() +  maxAge),
     signed: true
   });

@@ -8,7 +8,8 @@ const addCookies = ({ res, user }) => {
     httpOnly:true,
     secure: process.env.NODE_ENV === 'production',
     expires: new Date(Date.now() +  maxAge),
-    signed: true
+    signed: true,
+    SameSite:'None',
   });
 };
 module.exports = {

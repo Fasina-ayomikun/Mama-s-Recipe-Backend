@@ -25,6 +25,12 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET,
 });
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); // replace "*" with the domain of your React application
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.use("/auth", require("./routes/auth"));
 app.use("/users", require("./routes/user"));
 app.use("/recipes", require("./routes/recipes"));

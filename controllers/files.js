@@ -33,6 +33,7 @@ const uploadImage = async (req, res) => {
       image: result.secure_url,
     });
   } catch (error) {
+    console.log(error)
     checkError(res, error);
   }
 };

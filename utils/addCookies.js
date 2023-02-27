@@ -9,7 +9,7 @@ const addCookies = ({ res, user }) => {
     secure: process.env.NODE_ENV === 'production',
     expires: new Date(Date.now() +  maxAge),
     signed: true,
-    SameSite:'None',
+    sameSite:'None',
   });
 };
 module.exports = {

@@ -24,6 +24,7 @@ const uploadImage = async (req, res) => {
       {
         use_filename: true,
         folder: "Mama's-Recipe",
+         secure: true ,
       }
     );
     console.log(result);

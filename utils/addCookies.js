@@ -6,7 +6,7 @@ const addCookies = ({ res, user }) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    expires: new Date(Date.now() +  maxAge),
+    expires: new Date(Date.now() + maxAge),
     signed: true,
   });
 };

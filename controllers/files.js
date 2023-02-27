@@ -26,6 +26,7 @@ const uploadImage = async (req, res) => {
         folder: "Mama's-Recipe",
       }
     );
+    console.log(result);
     fs.unlinkSync(req.files.image.tempFilePath);
     res.status(200).json({
       success: true,

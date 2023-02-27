@@ -9,11 +9,7 @@ const cors = require("cors");
 const cloudinary = require("cloudinary").v2;
 
 const app = express();
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUD_API_KEY,
-  api_secret: process.env.CLOUD_API_SECRET,
-});
+
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(fileUploader({ useTempFiles: true }));
@@ -25,6 +21,11 @@ app.use(
     credentials: true,
   })
 );
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
 app.post("/", (req, res) => {
   res.json({ msg: "msg" });
 });

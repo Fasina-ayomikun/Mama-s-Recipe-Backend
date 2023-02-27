@@ -27,7 +27,7 @@ const uploadImage = async (req, res) => {
       }
     );
     console.log(result);
-//     fs.unlinkSync(req.files.image.tempFilePath);
+    fs.unlinkSync(req.files.image.tempFilePath);
     res.status(200).json({
       success: true,
       msg: "Image uploaded successfully",

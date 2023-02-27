@@ -14,4 +14,4 @@ const addCookies = ({ res, user }) => {
 };
 module.exports = {
   addCookies,
-};
+}; 

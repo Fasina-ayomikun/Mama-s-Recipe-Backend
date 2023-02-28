@@ -19,6 +19,7 @@ const uploadImage = async (req, res) => {
     if (fileImage.size > maxSize) {
       throw new BadRequestError("Please upload an image smaller than 20MB");
     }
+    console.log( req.files.image)
     const result = await cloudinary.uploader.upload(
       req.files.image.tempFilePath,
        {

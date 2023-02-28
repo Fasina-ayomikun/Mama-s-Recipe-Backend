@@ -22,18 +22,19 @@ const updateUser = async (req, res) => {
       }
     }
     await User.updateOne({ _id: userId }, req.body);
-
+    const updatedUser = await User.findOne({ _id: userId });
+    console.log(updatedUser);
     res.status(200).json({
       success: true,
       user: {
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        displayName: user.displayName,
-        bio: user.bio,
-        profileImage: user.profileImage,
-        createdAt: user.createdAt,
+        _id: updatedUser._id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        displayName: updatedUser.displayName,
+        bio: updatedUser.bio,
+        profileImage: updatedUser.profileImage,
+        createdAt: updatedUser.createdAt,
       },
       msg: "User successfully updated",
     });

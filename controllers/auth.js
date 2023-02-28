@@ -36,7 +36,7 @@ const register = async (req, res) => {
       success: true,
       msg: "User successfully created",
       user: {
-        _id: user._id,
+        _id: newUser._id,
         firstName,
         lastName,
         email,

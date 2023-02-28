@@ -9,10 +9,6 @@ const cors = require("cors");
 const cloudinary = require("cloudinary").v2;
 
 const app = express();
-
-app.use(express.json());
-app.use(cookieParser(process.env.JWT_SECRET));
-app.use(fileUploader({ useTempFiles: true }));
 app.use(
   cors({
     origin: process.env.FRONTEND_LINK,
@@ -21,6 +17,10 @@ app.use(
 
   })
 );
+app.use(express.json());
+app.use(cookieParser(process.env.JWT_SECRET));
+app.use(fileUploader({ useTempFiles: true }));
+
 // cloudinary.config({
 //   cloud_name: process.env.CLOUD_NAME,
 //   api_key: process.env.CLOUD_API_KEY,

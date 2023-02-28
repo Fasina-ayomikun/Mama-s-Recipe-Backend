@@ -26,10 +26,11 @@ app.use(
 //   api_key: process.env.CLOUD_API_KEY,
 //   api_secret: process.env.CLOUD_API_SECRET,
 // });
-
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", process.env.FRONTEND_LINK); // replace "*" with the domain of your React application
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.setHeader('Access-Control-Allow-Origin', 'https://mama-s-recipe.vercel.app');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', true);
   next();
 });
 

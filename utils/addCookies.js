@@ -1,3 +1,4 @@
+require("dotenv").config();
 const createToken = require("./createToken");
 
 const addCookies = ({ res, user }) => {
@@ -5,9 +6,10 @@ const addCookies = ({ res, user }) => {
   const maxAge = 60 * 60 * 1000 * 24;
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     expires: new Date(Date.now() + maxAge),
     signed: true,
+    sameSite: "None",
   });
 };
 module.exports = {

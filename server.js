@@ -17,8 +17,8 @@ app.use(
   cors({
     origin: process.env.FRONTEND_LINK,
     credentials: true,
-    
-     allowedHeaders: ['Content-Type', 'Authorization'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin'],
+
   })
 );
 // cloudinary.config({

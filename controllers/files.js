@@ -19,20 +19,29 @@ const uploadImage = async (req, res) => {
     if (fileImage.size > maxSize) {
       throw new BadRequestError("Please upload an image smaller than 20MB");
     }
+    console.log( req.files.image)
     const result = await cloudinary.uploader.upload(
       req.files.image.tempFilePath,
-      {
+       
+    {
         use_filename: true,
         folder: "Mama's-Recipe",
-      }
+        secure: true,
+    }
+  
     );
-    fs.unlinkSync(req.files.image.tempFilePath);
+// //     console.log(result);
+// if (fs.existsSync(req.files.image.tempFilePath)) {
+//   fs.unlinkSync(req.files.image.tempFilePath);
+// }
     res.status(200).json({
       success: true,
       msg: "Image uploaded successfully",
       image: result.secure_url,
+//       image:''
     });
   } catch (error) {
+    console.log(error)
     checkError(res, error);
   }
 };

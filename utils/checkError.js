@@ -1,4 +1,5 @@
 const checkError = (res, error) => {
+  console.log(error,error.message)
   let customError = {
     msg: error.message || "Something went wrong",
     status: error.status || 500,

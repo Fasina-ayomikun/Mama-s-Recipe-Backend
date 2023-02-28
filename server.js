@@ -9,24 +9,32 @@ const cors = require("cors");
 const cloudinary = require("cloudinary").v2;
 
 const app = express();
+app.use(
+  cors({
+    origin: process.env.FRONTEND_LINK,
+    credentials: true,
+      allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin'],
+
+  })
+);
+app.use(express.json());
+app.use(cookieParser(process.env.JWT_SECRET));
+app.use(fileUploader({
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
+}));
+
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_API_KEY,
   api_secret: process.env.CLOUD_API_SECRET,
 });
-app.use(express.json());
-app.use(cookieParser(process.env.JWT_SECRET));
-app.use(fileUploader({ useTempFiles: true }));
-app.use("/assets", express.static("assets"));
-
-app.use(
-  cors({
-    origin: process.env.FRONTEND_LINK,
-    credentials: true,
-  })
-);
-app.post("/", (req, res) => {
-  res.json({ msg: "msg" });
+app.use(function(req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', 'https://mama-s-recipe.vercel.app');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
 });
 
 app.use("/auth", require("./routes/auth"));

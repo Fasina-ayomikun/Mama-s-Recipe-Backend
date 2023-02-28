@@ -35,7 +35,7 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET,
 });
 app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", 'https://mama-s-recipe.vercel.app');
+  res.setHeader("Access-Control-Allow-Origin",process.env.FRONTEND_LINK);
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PATCH, DELETE, OPTIONS"

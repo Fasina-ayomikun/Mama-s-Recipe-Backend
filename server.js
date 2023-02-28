@@ -19,7 +19,7 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
-app.use(fileUploader({ useTempFiles: false }));
+app.use(fileUploader({ useTempFiles: true }));
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,

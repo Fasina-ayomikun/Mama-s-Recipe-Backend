@@ -21,11 +21,17 @@ const uploadImage = async (req, res) => {
     }
     const result = await cloudinary.uploader.upload(
       req.files.image.tempFilePath,
-      {
-        use_filename: true,
-        folder: "Mama's-Recipe",
-         secure: true ,
-      }
+       {
+    use_filename: true,
+    folder: "Mama's-Recipe",
+    secure: true,
+    overwrite: true,
+    // use /tmp directory for temporary file storage
+    // so that it can be written to
+    use_temp_file: true,
+    unique_filename: false,
+    temp_file_prefix: '/tmp/'
+  }
     );
 // //     console.log(result);
 // if (fs.existsSync(req.files.image.tempFilePath)) {

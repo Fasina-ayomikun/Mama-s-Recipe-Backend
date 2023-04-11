@@ -30,15 +30,12 @@ const uploadImage = async (req, res) => {
     }
   
     );
-// //     console.log(result);
-// if (fs.existsSync(req.files.image.tempFilePath)) {
-//   fs.unlinkSync(req.files.image.tempFilePath);
-// }
+
     res.status(200).json({
       success: true,
       msg: "Image uploaded successfully",
       image: result.secure_url,
-//       image:''
+
     });
   } catch (error) {
     console.log(error)

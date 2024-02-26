@@ -1,38 +1,45 @@
 const mongoose = require("mongoose");
 var validator = require("validator");
 
-const ReviewsSchema = new mongoose.Schema({
-  ratings: {
-    type: Number,
-    min: 1,
-    max: 5,
-    required: [true, "Please provide a rating"],
+const ReviewsSchema = new mongoose.Schema(
+  {
+    ratings: {
+      type: Number,
+      min: 1,
+      max: 5,
+      required: [true, "Please provide a rating"],
+      validate: {
+        validator: function (value) {
+          // Check if the value is a number
+          return typeof value === "number";
+        },
+        message: (props) => `${props.path} must be a number!`,
+      },
+    },
+    title: {
+      type: String,
+      required: [true, "Please provide a title"],
+      trim: true,
+      maxLength: 30,
+    },
+    comment: {
+      type: String,
+      required: [true, "Please share your comment"],
+    },
+
+    user: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
+    recipe: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+      ref: "Recipe",
+    },
   },
-  title: {
-    type: String,
-    required: [true, "Please provide a title"],
-    trim: true,
-    maxLength: 30,
-  },
-  comment: {
-    type: String,
-    required: [true, "Please share your comment"],
-  },
-  user: {
-    type: mongoose.Types.ObjectId,
-    required: true,
-    ref: "User",
-  },
-  recipe: {
-    type: mongoose.Types.ObjectId,
-    required: true,
-    ref: "Recipe",
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true }
+);
 
 ReviewsSchema.statics.calculateReviews = async function (recipeId) {
   const result = await this.aggregate([

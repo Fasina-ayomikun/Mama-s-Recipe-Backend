@@ -1,74 +1,90 @@
 const BadRequestError = require("../errors/bad-request");
 const NotFoundError = require("../errors/not-found");
 const checkError = require("../utils/checkError");
+const cloudinary = require("cloudinary").v2;
 const checkPermission = require("../utils/checkPermission");
 const User = require("../models/User");
-const updateUser = async (req, res) => {
-  try {
-    const { id: userId } = req.params;
+const { imageUploader } = require("../utils/imageHandler");
+const { addCookies } = require("../utils/addCookies");
+const updateUserDetails = async (req, res) => {
+  const { id: userId } = req.params;
 
-    const user = await User.findOne({ _id: userId });
-    // Check if user is authorized to access this route
-    checkPermission(req.user.userId, user._id);
-    // Check if User exists
-    if (!user) {
-      throw new NotFoundError(`No user with id: ${userId}`);
-    }
-    if (req.body.email) {
-      if (req.body.email !== req.user.email) {
-        throw new BadRequestError(
-          "Unable to update user, Please check the email"
-        );
-      }
-    }
-    await User.updateOne({ _id: userId }, req.body);
-    const updatedUser = await User.findOne({ _id: userId });
-    console.log(updatedUser);
-    res.status(200).json({
-      success: true,
-      user: {
-        _id: updatedUser._id,
-        firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName,
-        email: updatedUser.email,
-        displayName: updatedUser.displayName,
-        bio: updatedUser.bio,
-        profileImage: updatedUser.profileImage,
-        createdAt: updatedUser.createdAt,
-      },
-      msg: "User successfully updated",
-    });
-  } catch (error) {
-    checkError(res, error);
+  const user = await User.findOne({ _id: userId });
+  // Check if User exists
+  if (!user) {
+    throw new NotFoundError(`No user with id: ${userId}`);
   }
+  if (req.body.email) {
+    const emailExists = await User.findOne({ email });
+    if (emailExists) {
+      throw new BadRequestError("User already exists");
+    }
+  }
+  let result;
+  let newData = { ...req.body };
+  if (req.files) {
+    const file = req.files.profileImage;
+    if (file.length > 1) {
+      throw new BadRequestError("Please upload one image");
+    }
+    if (file.mimetype.startsWith("image ")) {
+      throw new BadRequestError("Please upload an image");
+    }
+    const maxSize = process.env.IMAGE_MAX_SIZE;
+    if (file.size > maxSize) {
+      throw new BadRequestError("Please upload an image smaller than 20MB");
+    }
+    await cloudinary.uploader.destroy(user.profileImage.id);
+    result = await imageUploader(file.tempFilePath);
+    newData.profileImage = { id: result.public_id, url: result.secure_url };
+  }
+  const updatedUser = await User.findOneAndUpdate({ _id: userId }, newData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+  console.log(updatedUser);
+  addCookies({ res, user: updatedUser });
+  res.status(200).json({
+    success: true,
+    user: updatedUser,
+    msg: "User successfully updated",
+  });
 };
 const singleUser = async (req, res) => {
-  try {
-    const { id: userId } = req.params;
-    const user = await User.findById({ _id: userId });
+  const { id: userId } = req.params;
+  const user = await User.findById({ _id: userId });
 
-    if (!user) {
-      throw new NotFoundError(`No user with id: ${userId}`);
-    }
-
-    res.status(200).json({
-      success: true,
-      user: {
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        displayName: user.displayName,
-        bio: user.bio,
-        profileImage: user.profileImage,
-        createdAt: user.createdAt,
-      },
-    });
-  } catch (error) {
-    checkError(res, error);
+  if (!user) {
+    throw new NotFoundError(`No user with id: ${userId}`);
   }
+
+  res.status(200).json({
+    success: true,
+    user,
+  });
 };
+const getAllUsers = async (req, res) => {
+  const users = await User.find({});
+  res.status(200).json({ success: true, users });
+};
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  const userExists = await User.findById(id);
+  if (!userExists) {
+    throw new BadRequestError("User does not exist");
+  }
+  await userExists.deleteOne();
+  res.status(200).json({
+    success: true,
+    msg: "user deleted successfully",
+  });
+};
+
 module.exports = {
-  updateUser,
+  updateUserDetails,
   singleUser,
+  getAllUsers,
+  deleteUser,
 };

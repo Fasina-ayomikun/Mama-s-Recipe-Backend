@@ -1,0 +1,1335 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mama's Recipe",
+    "description": "An App used to share your favorite home made recipe",
+    "version": "1.0.1"
+  },
+  "contact": {
+    "email": "ayomikunfasina240@gmail.com"
+  },
+
+  "servers": [
+    {
+      "url": "http://localhost:4000/api/{version}",
+      "description": "localhost url",
+      "variables": {
+        "version": {
+          "enum": ["v1", "v2"],
+          "default": "v1"
+        }
+      }
+    }
+  ],
+  "security": {
+    "googleOAuth": ["profile", "email"]
+  },
+  "components": {
+    "securitySchemes": {
+      "CookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "token"
+      },
+      "googleOAuth": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "http://localhost:4000/api/v1/oauth/google",
+            "tokenUrl": "http://localhost:4000/api/v1/oauth/google",
+            "scopes": {
+              "email": "Access email",
+              "profile": "Access profile"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "loggedInWithOAuth": {
+            "type": "boolean",
+            "default": false
+          },
+          "profileImage": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          },
+          "role": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+
+            "format": "date-time"
+          }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "ratings": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "recipe": {
+            "$ref": "#/components/schemas/SingleRecipeResponse"
+          },
+
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      },
+      "BadRequestError": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "default": false
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "msg": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "SingleRecipeResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "ingredients": {
+            "type": "array"
+          },
+          "equipments": {
+            "type": "array"
+          },
+          "instructions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "step": {
+                  "type": "number"
+                },
+                "details": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "averageRatings": {
+            "type": "number"
+          },
+          "noOfReviews": {
+            "type": "number"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "likers": {
+            "type": "array"
+          },
+          "noOfLikes": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "description": "Registers user ",
+        "summary": "Get user register details",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "displayName": {
+                    "type": "string"
+                  },
+                  "bio": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+
+                  "password2": {
+                    "type": "string"
+                  },
+
+                  "profileImage": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "role": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "user registration in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "description": "Logs user in",
+        "summary": "Get user login details",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "user logs in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": ["Authentication"],
+        "description": "user logout route",
+        "summary": "User log out",
+        "responses": {
+          "200": {
+            "description": "User logout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "description": "Send reset password request to mail",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Send token to frontend",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/forgot-password/reset/{token}": {
+      "post": {
+        "description": "Reset Password",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["Authentication"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  },
+                  "password2": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/oauth/google": {
+      "get": {
+        "tags": ["Authentication"],
+        "description": "Google Authentication",
+        "summary": "Get user login details from Google",
+        "security": {
+          "googleOAuth": ["profile", "email"]
+        },
+        "responses": {
+          "302": {
+            "description": "user logs in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "msg": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/oauth/google/callback": {
+      "get": {
+        "tags": ["Authentication"],
+        "description": "Google Authentication",
+        "summary": "Get user login details from Google",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "user logs in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "msg": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes": {
+      "get": {
+        "description": "Get all the recipes",
+        "summary": "Get all recipes",
+        "tags": ["Recipes"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "equipment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ingredient",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "minLikes",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "minAvgRating",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "creator",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "minReviews",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "length": {
+                      "type": "number"
+                    },
+
+                    "recipes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SingleRecipeResponse"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new Recipe",
+        "tags": ["Recipes"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "images": {
+                    "type": "array",
+
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "ingredients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "equipments": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "video": {
+                    "type": "string",
+                    "format": "binary",
+                    "required": false
+                  },
+                  "instructions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "step": {
+                          "type": "number"
+                        },
+                        "details": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+
+                  "user": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "recipe": {
+                      "$ref": "#/components/schemas/SingleRecipeResponse"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/{id}": {
+      "get": {
+        "tags": ["Recipes"],
+        "description": "Get single Recipe",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "recipe": {
+                      "$ref": "#/components/schemas/SingleRecipeResponse"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Recipes"],
+        "description": "Update single Recipe",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Recipes"],
+        "description": "Delete single Recipe",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/like/{id}": {
+      "get": {
+        "tags": ["Recipes"],
+        "description": "Like single Recipe",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews": {
+      "post": {
+        "description": "Create a new Review",
+        "tags": ["Reviews"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reply": {
+                    "type": "string"
+                  },
+                  "reviewId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "review": {
+                      "$ref": "#/components/schemas/Review"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews/{id}": {
+      "get": {
+        "tags": ["Reviews"],
+        "description": "Get single Recipe",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "reviews": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Review"
+                      }
+                    },
+                    "length": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Reviews"],
+        "description": "Update single Review",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reply": {
+                    "type": "string"
+                  },
+                  "reviewId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Reviews"],
+        "description": "Delete single Review",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews/all/{recipeId}": {
+      "get": {
+        "description": "Get all the recipes",
+        "summary": "Get all recipes",
+        "tags": ["Reviews"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "recipeId",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "length": {
+                      "type": "number"
+                    },
+
+                    "reviews": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Review"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews/reply/{id}": {
+      "patch": {
+        "tags": ["Reviews"],
+        "description": "Get single Recipe Review Reply",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reviewId": {
+                    "type": "string"
+                  },
+                  "reply": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+
+                    "msg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Reviews"],
+        "description": "Delete single Recipe Review Reply",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews/reply/new/{id}": {
+      "post": {
+        "tags": ["Reviews"],
+        "description": "Create single Recipe Review Reply",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reviewId": {
+                    "type": "string"
+                  },
+                  "reply": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+
+                    "msg": {
+                      "type": "string"
+                    },
+                    "reply": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string"
+                        },
+                        "reviewId": {
+                          "type": "string"
+                        },
+                        "reply": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews/reply/all/{id}": {
+      "get": {
+        "tags": ["Reviews"],
+        "description": "Get single Recipe Review Reply",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+
+                    "msg": {
+                      "type": "string"
+                    },
+                    "replies": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string"
+                          },
+                          "reviewId": {
+                            "type": "string"
+                          },
+                          "reply": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -12,7 +12,7 @@ const ReplySchema = new mongoose.Schema(
     reviewId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Reviews",
-    },
+    }, 
   },
   { timestamps: true }
 );

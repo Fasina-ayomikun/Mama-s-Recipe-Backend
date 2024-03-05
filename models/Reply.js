@@ -6,13 +6,13 @@ const ReplySchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    reply: {
+    comment: {
       type: String,
     },
     reviewId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Reviews",
-    }, 
+    },
   },
   { timestamps: true }
 );

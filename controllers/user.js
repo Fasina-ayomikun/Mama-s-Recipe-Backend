@@ -1,27 +1,28 @@
 const BadRequestError = require("../errors/bad-request");
 const NotFoundError = require("../errors/not-found");
-const checkError = require("../utils/checkError");
 const cloudinary = require("cloudinary").v2;
 const checkPermission = require("../utils/checkPermission");
 const User = require("../models/User");
-const { imageUploader } = require("../utils/imageHandler");
+const { fileUploader } = require("../utils/fileHandler");
 const { addCookies } = require("../utils/addCookies");
 const updateUserDetails = async (req, res) => {
   const { id: userId } = req.params;
-
   const user = await User.findOne({ _id: userId });
   // Check if User exists
   if (!user) {
     throw new NotFoundError(`No user with id: ${userId}`);
   }
   if (req.body.email) {
-    const emailExists = await User.findOne({ email });
-    if (emailExists) {
-      throw new BadRequestError("User already exists");
+    const emailExists = await User.findOne({ email: req.body.email });
+    if (!emailExists) {
+      throw new BadRequestError("User does not exist");
     }
   }
   let result;
   let newData = { ...req.body };
+  if (typeof req.body.profileImage === "string") {
+    newData.profileImage = JSON.parse(req.body.profileImage);
+  }
   if (req.files) {
     const file = req.files.profileImage;
     if (file.length > 1) {
@@ -35,7 +36,7 @@ const updateUserDetails = async (req, res) => {
       throw new BadRequestError("Please upload an image smaller than 20MB");
     }
     await cloudinary.uploader.destroy(user.profileImage.id);
-    result = await imageUploader(file.tempFilePath);
+    result = await fileUploader(file.tempFilePath);
     newData.profileImage = { id: result.public_id, url: result.secure_url };
   }
   const updatedUser = await User.findOneAndUpdate({ _id: userId }, newData, {
@@ -43,7 +44,6 @@ const updateUserDetails = async (req, res) => {
     runValidators: true,
     useFindAndModify: false,
   });
-  console.log(updatedUser);
   addCookies({ res, user: updatedUser });
   res.status(200).json({
     success: true,

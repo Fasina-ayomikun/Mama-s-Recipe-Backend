@@ -1,7 +1,7 @@
 require("dotenv").config();
 const passport = require("passport");
 const User = require("../models/User");
-const { imageUploader } = require("../utils/imageHandler");
+const { fileUploader } = require("../utils/fileHandler");
 const cloudinary = require("cloudinary").v2;
 // const User = require("../model/User");
 var GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -31,7 +31,7 @@ passport.use(
         } else {
           const { given_name, family_name, picture, email, name } =
             profile._json;
-          const result = await imageUploader(picture);
+          const result = await fileUploader(picture);
           const newUser = await User.create({
             firstName: given_name,
             lastName: family_name,
@@ -58,9 +58,29 @@ passport.use(
       scope: ["user:email"],
     },
     //TODO: Fixe this null email
-    function (accessToken, refreshToken, profile, done) {
-      console.log(profile);
-      done();
+    async function (accessToken, refreshToken, profile, next) {
+      try {
+        const user = await User.findOne({ email: profile.emails[0].value });
+
+        if (user) {
+          next(null, user);
+        } else {
+          const { _json } = profile;
+
+          const result = await fileUploader(_json.avatar_url);
+          const user = await User.create({
+            firstName: _json.name.split(" ")[1],
+            lastName: _json.name.split(" ")[0],
+            displayName: _json.name,
+            email: profile.emails[0].value,
+            loggedInWithOAuth: true,
+            profileImage: { id: result.public_id, url: result.secure_url },
+          });
+          next(null, user);
+        }
+      } catch (error) {
+        next(error);
+      }
     }
   )
 );

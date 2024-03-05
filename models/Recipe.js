@@ -25,35 +25,24 @@ const RecipeSchema = new mongoose.Schema(
         },
       },
     ],
-    video: {
-      id: {
-        type: String,
-      },
-      url: {
-        type: String,
-      },
-    },
+
     equipments: {
       type: Array,
-      //TODO:Uncomment this
-      // required: [true, "Please list the equipments used"],
+      required: [true, "Please list the equipments used"],
     },
     ingredients: {
       type: Array,
-      //TODO:Uncomment this
-      // required: [true, "Please list the ingredients used"],
+      required: [true, "Please list the ingredients used"],
     },
     instructions: [
       {
         step: {
           type: Number,
-          //TODO:Uncomment this
-          // required: [true, "Please provide instruction step number"],
+          required: [true, "Please provide Recipe instructions"],
         },
         details: {
           type: String,
-          //TODO:Uncomment this
-          // required: [true, "Please provide instruction step details"],
+          required: [true, "Please provide Recipe instructions"],
         },
       },
     ],

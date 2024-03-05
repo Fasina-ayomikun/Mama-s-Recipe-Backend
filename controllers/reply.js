@@ -9,19 +9,20 @@ module.exports.createReviewReply = async (req, res) => {
     throw new NotFoundError("Review does not exist");
   }
   req.body.commenterId = req.user.userId;
-  const reply = await Reply.create({ ...req.body, reviewId });
-  res.status(201).json({ success: true, msg: "Reply created", reply });
+  const comment = await Reply.create({ ...req.body, reviewId });
+  res.status(201).json({ success: true, msg: "Comment created", comment });
 };
 
 module.exports.getReviewReplies = async (req, res) => {
-  console.log("here");
   const { id: reviewId } = req.params;
   const reviewExist = await Reviews.findById(reviewId);
   if (!reviewExist) {
     throw new NotFoundError("Review does not exist");
   }
-  req.body.commenterId = req.user.userId;
-  const replies = await Reply.find({ reviewId });
+  const replies = await Reply.find({ reviewId }).populate({
+    path: "commenterId",
+    select: "firstName lastName email profileImage role displayName",
+  });
   res.status(200).json({ success: true, msg: "replies gotten", replies });
 };
 module.exports.updateReviewReply = async (req, res) => {
@@ -30,9 +31,9 @@ module.exports.updateReviewReply = async (req, res) => {
   if (!reply) {
     throw new NotFoundError("Reply does not exist");
   }
-  reply.reply = req.body.reply;
+  reply.comment = req.body.comment;
   await reply.save();
-  res.status(200).json({ success: true, msg: "Reply updated  successfully" });
+  res.status(200).json({ success: true, msg: "Comment updated  successfully" });
 };
 module.exports.deleteReviewReply = async (req, res) => {
   const { id: replyId } = req.params;
@@ -41,5 +42,5 @@ module.exports.deleteReviewReply = async (req, res) => {
     throw new NotFoundError("Reply does not exist");
   }
   await Reply.deleteOne({ _id: replyId });
-  res.status(200).json({ success: true, msg: "Reply deleted  successfully" });
+  res.status(200).json({ success: true, msg: "Comment deleted  successfully" });
 };

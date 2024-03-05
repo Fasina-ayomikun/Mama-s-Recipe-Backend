@@ -25,11 +25,8 @@ class helperClass {
       minReviews,
     } = this.query;
     const filterQuery = {};
-    console.log(this.query);
     if (equipment) {
-      console.log(equipment);
       filterQuery.equipments = { $in: [equipment] };
-      console.log(filterQuery);
     }
     if (ingredient) {
       filterQuery.ingredients = { $in: [ingredient] };

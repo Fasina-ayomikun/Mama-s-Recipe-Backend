@@ -1,5 +1,4 @@
 module.exports.ErrorHandlerMiddleWare = (err, req, res, next) => {
-  console.log(err);
   let errorInfo = {
     status: err.status || 500,
     message: err.message || "Something went wrong",

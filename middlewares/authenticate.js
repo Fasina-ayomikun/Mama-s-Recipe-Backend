@@ -1,7 +1,6 @@
 require("dotenv").config();
 const UnauthenticatedError = require("../errors/unauthenticated");
 const jwt = require("jsonwebtoken");
-const checkError = require("../utils/checkError");
 const authenticateUser = (req, res, next) => {
   // Get token from cookies
   let token = req.signedCookies.token;
@@ -20,7 +19,7 @@ const authenticateUser = (req, res, next) => {
 const checkRolesPermission = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      throw new UnauthenticatedError("Unauthorized to access this route");
+      throw new UnauthenticatedError("Unauthorized uuuuu to access this route");
     }
     next();
   };

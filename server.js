@@ -8,7 +8,7 @@ const connectDB = require("./db/connect");
 const NotFoundMiddleWare = require("./middlewares/not-found");
 const { ErrorHandlerMiddleWare } = require("./middlewares/error-handler");
 const cookieParser = require("cookie-parser");
-const fileUploader = require("express-fileupload");
+const ExpressFileUploader = require("express-fileupload");
 const cors = require("cors");
 const cloudinary = require("cloudinary").v2;
 const passport = require("passport");
@@ -21,18 +21,15 @@ app.use(
   cors({
     origin: process.env.FRONTEND_LINK,
     credentials: true,
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "Access-Control-Allow-Origin",
-    ],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "PATCH", "PUT", "DELETE", "POST"],
   })
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(
-  fileUploader({
+  ExpressFileUploader({
     useTempFiles: true,
     tempFileDir: "/tmp/",
   })
@@ -50,16 +47,6 @@ cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_API_KEY,
   api_secret: process.env.CLOUD_API_SECRET,
-});
-app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin",process.env.FRONTEND_LINK);
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PATCH, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  next();
 });
 
 app.use("/api/v1/auth", require("./routes/auth"));

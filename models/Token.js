@@ -13,7 +13,7 @@ const TokenSchema = new mongoose.Schema(
     },
     tokenExpirationDate: {
       type: Date,
-      default: Date.now() + 10 * 60 * 1000,
+      default: () => Date.now() + 10 * 60 * 1000, // Ten minutes ahead of the current time
     },
   },
   { timestamps: true }

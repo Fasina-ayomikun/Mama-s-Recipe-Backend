@@ -2,7 +2,7 @@ const BadRequestError = require("../errors/bad-request");
 const User = require("../models/User");
 const NotFoundError = require("../errors/not-found");
 const { addCookies } = require("../utils/addCookies");
-const { imageUploader } = require("../utils/imageHandler");
+const { fileUploader } = require("../utils/fileHandler");
 const UnauthenticatedError = require("../errors/unauthenticated");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
@@ -48,7 +48,7 @@ const register = async (req, res) => {
       throw new BadRequestError("Please upload an image smaller than 20MB");
     }
 
-    result = await imageUploader(file.tempFilePath);
+    result = await fileUploader(file.tempFilePath);
     newData.profileImage = { id: result.public_id, url: result.secure_url };
   }
   const newUser = await User.create(newData);
@@ -70,7 +70,6 @@ const login = async (req, res) => {
   }
   // Check if user exist
   const user = await User.findOne({ email });
-  console.log(user);
   if (!user) {
     throw new NotFoundError("User does not exist");
   }
@@ -103,6 +102,11 @@ const logout = async (req, res, next) => {
     res
       .status(200)
       .json({ success: true, msg: "User successfully logged out" });
+
+    res.cookie("token", "logout", {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    });
     return;
   }
   res.cookie("token", "logout", {
@@ -122,15 +126,11 @@ const forgotPasswordRequestController = async (req, res) => {
     .createHash("sha256")
     .update(forgotPasswordToken)
     .digest("hex");
-  console.log(encryptedToken);
   const createdToken = await Token.create({
     userId: userExists._id,
     token: encryptedToken,
   });
-  console.log(req.protocol);
-  const Url = `${req.protocol}://${req.get(
-    "host"
-  )}/auth/forgot-password/reset?token=${forgotPasswordToken}`;
+  const Url = `${process.env.FRONTEND_LINK}/forgot-password/reset?token=${forgotPasswordToken}`;
   const options = {
     from: '"Fasina Ayomikun 👻" <ayomikunfasina@gmail.com>', // sender address
 
@@ -159,17 +159,17 @@ const forgotPasswordRequestController = async (req, res) => {
 const forgotPasswordController = async (req, res) => {
   const { token } = req.params;
   const { password, password2 } = req.body;
+
   const encryptedPasswordToken = crypto
     .createHash("sha256")
     .update(token)
     .digest("hex");
-
   const tokenExists = await Token.findOne({
     token: encryptedPasswordToken,
     tokenExpirationDate: { $gt: Date.now() },
   });
   if (!tokenExists) {
-    throw new BadRequestError("Invalid token");
+    throw new BadRequestError("Seems token has expired");
   }
   const user = await User.findById(tokenExists.userId);
   if (!user) {

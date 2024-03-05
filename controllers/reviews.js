@@ -2,7 +2,6 @@ const BadRequestError = require("../errors/bad-request");
 const NotFoundError = require("../errors/not-found");
 const Recipe = require("../models/Recipe");
 const Reviews = require("../models/Reviews");
-const checkError = require("../utils/checkError");
 const checkPermission = require("../utils/checkPermission");
 
 const createReview = async (req, res) => {

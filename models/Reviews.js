@@ -60,9 +60,7 @@ ReviewsSchema.statics.calculateReviews = async function (recipeId) {
         noOfReviews: result[0]?.noOfReviews || 0,
       }
     );
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 // Call method when Review is updated
 ReviewsSchema.post("save", async function () {

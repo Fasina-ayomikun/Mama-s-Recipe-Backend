@@ -7,6 +7,8 @@ const {
   singleRecipe,
   getUserRecipes,
   toggleLike,
+  getAllRecipesSingleDetail,
+  getUserFavoritesRecipes,
 } = require("../controllers/recipes");
 const {
   authenticateUser,
@@ -14,10 +16,15 @@ const {
 } = require("../middlewares/authenticate");
 const router = express.Router();
 router.route("/").get(getAllRecipes).post(authenticateUser, createRecipe);
+router.route("/details").get(getAllRecipesSingleDetail);
+router.route("/user/:userId").get(getUserRecipes);
+router.route("/favorite/:userId").get(getUserFavoritesRecipes);
+
 router.route("/like/:id").get(authenticateUser, toggleLike);
+
 router
   .route("/:id")
-  .get(authenticateUser, singleRecipe)
+  .get(singleRecipe)
   .patch(
     authenticateUser,
     checkRolesPermission("admin", "store manager"),
@@ -28,5 +35,4 @@ router
     checkRolesPermission("admin", "store manager"),
     deleteRecipe
   );
-router.route("/user/:userId").get(authenticateUser, getUserRecipes);
 module.exports = router;

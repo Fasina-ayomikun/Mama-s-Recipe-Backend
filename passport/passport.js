@@ -2,11 +2,8 @@ require("dotenv").config();
 const passport = require("passport");
 const User = require("../models/User");
 const { fileUploader } = require("../utils/fileHandler");
-const cloudinary = require("cloudinary").v2;
-// const User = require("../model/User");
-var GoogleStrategy = require("passport-google-oauth20").Strategy;
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const GitHubStrategy = require("passport-github2").Strategy;
-
 passport.serializeUser(function (user, next) {
   next(null, user.id);
 });
@@ -84,4 +81,5 @@ passport.use(
     }
   )
 );
+
 module.exports = passport;

@@ -13,9 +13,7 @@ router.get(
 
 router.get(
   "/google/callback",
-  cors({
-    origin: process.env.FRONTEND_LINK,
-  }),
+
   passport.authenticate("google", {
     failureRedirect: `${process.env.FRONTEND_LINK}/login`,
   }),
@@ -38,16 +36,31 @@ router.get("/user", (req, res) => {
 router.route("/github").get(
   passport.authenticate("github", {
     scope: ["user:email"],
-    failureRedirect: `${process.env.FRONTEND_LINK}/login`,
   }),
   (req, res) => {}
 );
-router
-  .route("/github/callback")
-  .get(passport.authenticate("github"), (req, res) => {
+router.route("/github/callback").get(
+  passport.authenticate("github", {
+    failureRedirect: `${process.env.FRONTEND_LINK}/login`,
+  }),
+  (req, res) => {
     addCookies({ res, user: req.user });
 
     res.redirect(`${process.env.FRONTEND_LINK}`);
-  });
+  }
+);
+router
+  .route("/facebook")
+  .get(passport.authenticate("facebook"), (req, res) => {});
+router.route("/facebook/callback").get(
+  passport.authenticate("facebook", {
+    failureRedirect: `${process.env.FRONTEND_LINK}/login`,
+  }),
+  (req, res) => {
+    addCookies({ res, user: req.user });
+
+    res.redirect(`${process.env.FRONTEND_LINK}`);
+  }
+);
 
 module.exports = router;

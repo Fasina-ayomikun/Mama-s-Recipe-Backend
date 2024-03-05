@@ -52,7 +52,7 @@ class helperClass {
     if (!page) {
       page = 1;
     }
-    const skipValue = resultPerPage - (page - 1);
+    const skipValue = (page - 1) * resultPerPage;
     this.base = this.base.limit(resultPerPage).skip(skipValue);
     return this;
   }

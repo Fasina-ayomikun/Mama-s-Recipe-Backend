@@ -11,6 +11,7 @@ const { addCookies } = require("../utils/addCookies");
 const getAllRecipes = async (req, res) => {
   // Sort the Recipes with createdAt
   let sortQuery = { createdAt: -1 };
+  const totalLength = await Recipe.collection.countDocuments();
   if (req.query.sort) {
     const { sort } = req.query;
     if (sort === "popularity") {
@@ -22,14 +23,18 @@ const getAllRecipes = async (req, res) => {
     }
   }
   const newBase = new helperClass(Recipe.find(), req.query).search().filter();
+  newBase.getLimitedResult(3);
   let recipes = await newBase.base.sort(sortQuery).populate({
     path: "user",
     select:
       "firstName lastName profileImage  displayName email role bio createdAt",
   });
-  const filteredProductNumber = recipes.length;
-  newBase.getLimitedResult(10);
-  res.json({ success: true, recipes, length: filteredProductNumber });
+  res.json({
+    success: true,
+    recipes,
+    totalLength,
+    length: recipes.length,
+  });
 };
 const getAllRecipesSingleDetail = async (req, res) => {
   const recipes = await Recipe.find({});

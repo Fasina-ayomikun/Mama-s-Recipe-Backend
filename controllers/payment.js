@@ -6,7 +6,7 @@ module.exports.handlePayment = async (req, res) => {
     throw new BadRequestError("Please provide an amount");
   }
   const { id } = await stripe.prices.create({
-    unit_amount: req.body.amount,
+    unit_amount: req.body.amount * 100,
     currency: "ngn",
     product_data: { name: "donation" },
   });
@@ -21,7 +21,7 @@ module.exports.handlePayment = async (req, res) => {
     ],
     mode: "payment",
     success_url: `${process.env.CLIENT_ORIGIN}/?success=true`,
-    cancel_url: `${process.env.CLIENT_ORIGIN}/?canceled=true`,
+    cancel_url: `${process.env.CLIENT_ORIGIN}/?success=false`,
   });
   res.json({
     url: session.url,

@@ -22,17 +22,24 @@ router.get(
     res.redirect(`${process.env.FRONTEND_LINK}`);
   }
 );
-router.get("/user", (req, res) => {
-  if (req.user) {
-    addCookies({ res, user: req.user });
+router.get(
+  "/user",
+  cors({
+    origin: process.env.FRONTEND_LINK,
+    credentials: true,
+  }),
+  (req, res) => {
+    if (req.user) {
+      addCookies({ res, user: req.user });
 
-    res
-      .status(200)
-      .json({ success: true, msg: "Login successful", user: req.user });
-  } else {
-    res.status(500).json({ success: false, msg: "Seems there was an error" });
+      res
+        .status(200)
+        .json({ success: true, msg: "Login successful", user: req.user });
+    } else {
+      res.status(500).json({ success: false, msg: "Seems there was an error" });
+    }
   }
-});
+);
 router.route("/github").get(
   passport.authenticate("github", {
     scope: ["user:email"],

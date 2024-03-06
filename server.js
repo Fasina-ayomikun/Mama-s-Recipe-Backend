@@ -48,7 +48,11 @@ cloudinary.config({
   api_key: process.env.CLOUD_API_KEY,
   api_secret: process.env.CLOUD_API_SECRET,
 });
-
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "https://mama-s-recipe.vercel.app");
+  // Add other headers as needed
+  next();
+});
 app.use("/api/v1/auth", require("./routes/auth"));
 app.use("/api/v1/oauth", require("./routes/oauth"));
 app.use("/api/v1/users", require("./routes/user"));

@@ -58,12 +58,24 @@ const getAllRecipesSingleDetail = async (req, res) => {
 const getUserRecipes = async (req, res) => {
   const { userId } = req.params;
   const sort = { createdAt: -1 };
-  const recipes = await Recipe.find({ user: userId }).sort(sort).populate({
-    path: "user",
-    select:
-      "firstName lastName profileImage  displayName email role bio createdAt",
-  });
-  res.status(200).json({ success: true, recipes, length: recipes.length });
+  let { page } = req.query;
+  if (!page) {
+    page = 1;
+  }
+  const totalLength = await Recipe.collection.countDocuments();
+  const skipValue = (page - 1) * 10;
+  const recipes = await Recipe.find({ user: userId })
+    .sort(sort)
+    .limit(10)
+    .skip(skipValue)
+    .populate({
+      path: "user",
+      select:
+        "firstName lastName profileImage  displayName email role bio createdAt",
+    });
+  res
+    .status(200)
+    .json({ success: true, recipes, length: recipes.length, totalLength });
 };
 const createRecipe = async (req, res) => {
   req.body.user = req.user.userId;

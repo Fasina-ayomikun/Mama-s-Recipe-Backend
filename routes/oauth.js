@@ -17,6 +17,7 @@ router.get(
     failureRedirect: `${process.env.FRONTEND_LINK}/login`,
   }),
   (req, res) => {
+    console.log("google", req.user);
     addCookies({ res, user: req.user });
     res.redirect(`${process.env.FRONTEND_LINK}`);
   }

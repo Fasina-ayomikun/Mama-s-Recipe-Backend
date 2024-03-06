@@ -14,7 +14,7 @@ router.get(
         .status(200)
         .json({ success: true, msg: "Login successful", user: req.user });
     } else {
-      res.status(500).json({ success: false, msg: "Seems there was an error" });
+      res.json({ success: false, msg: "Seems there was an error" });
     }
   }
 );

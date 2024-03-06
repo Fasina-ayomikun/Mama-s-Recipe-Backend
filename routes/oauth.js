@@ -5,6 +5,22 @@ const cors = require("cors");
 const { addCookies } = require("../utils/addCookies");
 
 router.get(
+  "/user",
+
+  (req, res) => {
+    if (req.user) {
+      addCookies({ res, user: req.user });
+
+      res
+        .status(200)
+        .json({ success: true, msg: "Login successful", user: req.user });
+    } else {
+      res.status(500).json({ success: false, msg: "Seems there was an error" });
+    }
+  }
+);
+
+router.get(
   "/google",
 
   passport.authenticate("google", { scope: ["profile", "email"] }),

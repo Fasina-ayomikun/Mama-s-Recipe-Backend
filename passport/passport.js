@@ -22,6 +22,7 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, next) => {
       try {
+        console.log(profile);
         const user = await User.findOne({ email: profile._json.email });
         if (user) {
           next(null, user);

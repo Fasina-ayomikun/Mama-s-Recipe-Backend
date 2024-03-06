@@ -25,16 +25,13 @@ router.get(
 router.route("/github").get(
   passport.authenticate("github", {
     scope: ["user:email"],
-  }),
-  (req, res) => {}
+  })
 );
 router.route("/github/callback").get(
   passport.authenticate("github", {
     failureRedirect: `${process.env.FRONTEND_LINK}/login`,
   }),
   (req, res) => {
-    addCookies({ res, user: req.user });
-
     res.redirect(`${process.env.FRONTEND_LINK}`);
   }
 );

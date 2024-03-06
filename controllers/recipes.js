@@ -23,7 +23,7 @@ const getAllRecipes = async (req, res) => {
     }
   }
   const newBase = new helperClass(Recipe.find(), req.query).search().filter();
-  newBase.getLimitedResult(3);
+  newBase.getLimitedResult(10);
   let recipes = await newBase.base.sort(sortQuery).populate({
     path: "user",
     select:

@@ -43,6 +43,7 @@ router.get(
   "/user",
 
   (req, res) => {
+    console.log(req.user);
     if (req.user) {
       addCookies({ res, user: req.user });
 

@@ -5,9 +5,7 @@ const { addCookies } = require("../utils/addCookies");
 
 router.get(
   "/google",
-
-  passport.authenticate("google", { scope: ["profile", "email"] }),
-  (req, res) => {}
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 router.get(

@@ -37,8 +37,8 @@ app.use(
 app.use(
   expressSession({
     secret: "your_secret_key",
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
   })
 );
 app.use(passport.initialize());

@@ -18,7 +18,6 @@ router.get(
   }),
   (req, res) => {
     console.log("google", req.user);
-    addCookies({ res, user: req.user });
     res.redirect(`${process.env.FRONTEND_LINK}`);
   }
 );

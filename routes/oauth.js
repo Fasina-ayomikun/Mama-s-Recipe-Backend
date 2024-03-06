@@ -39,21 +39,17 @@ router.route("/github/callback").get(
   }
 );
 
-router.get(
-  "/user",
+router.get("/user", (req, res) => {
+  console.log(req.user);
+  if (req.user) {
+    addCookies({ res, user: req.user });
 
-  (req, res) => {
-    console.log(req.user);
-    if (req.user) {
-      addCookies({ res, user: req.user });
-
-      res
-        .status(200)
-        .json({ success: true, msg: "Login successful", user: req.user });
-    } else {
-      res.status(403).json({ success: false, msg: "Seems there was an error" });
-    }
+    res
+      .status(200)
+      .json({ success: true, msg: "Login successful", user: req.user });
+  } else {
+    res.status(403).json({ success: false, msg: "Seems there was an error" });
   }
-);
+});
 
 module.exports = router;

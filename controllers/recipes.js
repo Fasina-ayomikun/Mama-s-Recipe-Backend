@@ -10,6 +10,7 @@ const User = require("../models/User");
 const { addCookies } = require("../utils/addCookies");
 const getAllRecipes = async (req, res) => {
   // Sort the Recipes with createdAt
+  console.log("recipes", req.user);
   let sortQuery = { createdAt: -1 };
   const totalLength = await Recipe.collection.countDocuments();
   if (req.query.sort) {

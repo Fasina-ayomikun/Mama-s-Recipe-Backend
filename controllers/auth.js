@@ -92,13 +92,18 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res, next) => {
+  res.cookie("token", "logout", {
+    httpOnly: true,
+    secure: true,
+    expires: new Date(Date.now()),
+    signed: true,
+    sameSite: "None",
+  });
   req.logout(function (err) {
     if (err) {
       return next(err);
     }
   });
-  res.clearCookie("token", { signed: true });
-
   res.status(200).json({ success: true, msg: "User successfully logged out" });
 };
 const forgotPasswordRequestController = async (req, res) => {

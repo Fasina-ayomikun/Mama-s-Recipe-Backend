@@ -95,16 +95,14 @@ const logout = async (req, res, next) => {
   const token = req.signedCookies.token;
   const { loggedInWithOAuth } = jwt.verify(token, process.env.JWT_SECRET);
   if (loggedInWithOAuth) {
-    req.logout(function (err) {
-      if (err) {
-        return next(err);
-      }
-    });
     res.cookie("token", "logout", {
       httpOnly: true,
       expires: new Date(Date.now()),
       signed: true,
     });
+    res
+      .status(200)
+      .json({ success: true, msg: "User successfully logged out" });
   } else {
     res.cookie("token", "logout", {
       httpOnly: true,

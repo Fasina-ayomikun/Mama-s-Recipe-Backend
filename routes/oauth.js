@@ -3,24 +3,23 @@ const router = express.Router();
 const passport = require("../passport/passport");
 const { addCookies } = require("../utils/addCookies");
 const jwt = require("jsonwebtoken");
-router.get("/user", (req, res) => {
+const User = require("../models/User");
+const BadRequestError = require("../errors/bad-request");
+router.get("/user", async (req, res) => {
   let token = req.signedCookies.token;
   // Check if token exists
   if (!token) {
     throw new UnauthenticatedError("Authentication Invalid,Please Log In");
   }
   // Decode token
-  const user = jwt.verify(token, process.env.JWT_SECRET);
-  if (user) {
-    res
-      .status(200)
-      .json({ success: true, msg: "Login successful", user: user });
-  } else {
-    res.status(500).json({
-      success: false,
-      msg: "Seems there was an error",
-    });
+  const { userId } = jwt.verify(token, process.env.JWT_SECRET);
+  const user = await User.findById(userId);
+  console.log(user);
+  if (!user) {
+    throw new BadRequestError("Login failed");
   }
+
+  res.status(200).json({ success: true, msg: "Login successful", user: user });
 });
 
 router.get(

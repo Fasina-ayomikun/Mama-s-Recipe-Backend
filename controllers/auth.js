@@ -92,22 +92,19 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res, next) => {
-  if (req.user.loggedInWithOAuth) {
+  const token = req.signedCookies.token;
+  const { loggedInWithOAuth } = jwt.verify(token, process.env.JWT_SECRET);
+  if (loggedInWithOAuth) {
     req.logout(function (err) {
       if (err) {
-        console.log(err);
         return next(err);
       }
     });
-    // Once logout is complete, set cookie and send response
     res.cookie("token", "logout", {
       httpOnly: true,
       expires: new Date(Date.now()),
       signed: true,
     });
-    res
-      .status(200)
-      .json({ success: true, msg: "User successfully logged out" });
   } else {
     res.cookie("token", "logout", {
       httpOnly: true,

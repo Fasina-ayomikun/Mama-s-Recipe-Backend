@@ -2,10 +2,33 @@ const express = require("express");
 const router = express.Router();
 const passport = require("../passport/passport");
 const { addCookies } = require("../utils/addCookies");
+const middleware = (req, res, next) => {
+  passport.authenticate(
+    "google",
+    { scope: ["profile", "email"] },
+    (err, user, info) => {
+      if (err || !user || info) {
+        // Handle errors or invalid authentication
+        return next("Error Auth");
+      }
+
+      // Log in the user
+      req.logIn(user, (error) => {
+        if (error) {
+          return next("Error Auth");
+        }
+        // Continue to the next middleware
+        return next();
+      });
+    }
+  )(req, res, next); // Pass req, res, and next to the Passport middleware
+};
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  // passport.authenticate("google", )
+  middleware,
+  (req, res) => {}
 );
 
 router.get(
@@ -35,13 +58,14 @@ router.route("/github/callback").get(
 );
 
 router.get("/user", (req, res) => {
-  console.log(req.user);
-  if (req.user) {
-    addCookies({ res, user: req.user });
+  const user = req.user;
+  console.log("user", user);
+  if (user) {
+    addCookies({ res, user: user });
 
     res
       .status(200)
-      .json({ success: true, msg: "Login successful", user: req.user });
+      .json({ success: true, msg: "Login successful", user: user });
   } else {
     res.status(403).json({ success: false, msg: "Seems there was an error" });
   }

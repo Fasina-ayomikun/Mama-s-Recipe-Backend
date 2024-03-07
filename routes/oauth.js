@@ -7,7 +7,7 @@ const User = require("../models/User");
 const BadRequestError = require("../errors/bad-request");
 router.get("/user", async (req, res) => {
   let token = req.signedCookies.token;
-  console.log(token);
+
   // Check if token exists
   if (!token) {
     throw new UnauthenticatedError("Authentication Invalid,Please Log In");

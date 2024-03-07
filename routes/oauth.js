@@ -2,33 +2,30 @@ const express = require("express");
 const router = express.Router();
 const passport = require("../passport/passport");
 const { addCookies } = require("../utils/addCookies");
-const middleware = (req, res, next) => {
-  passport.authenticate(
-    "google",
-    { scope: ["profile", "email"] },
-    (err, user, info) => {
-      if (err || !user || info) {
-        // Handle errors or invalid authentication
-        return next("Error Auth");
-      }
-
-      // Log in the user
-      req.logIn(user, (error) => {
-        if (error) {
-          return next("Error Auth");
-        }
-        // Continue to the next middleware
-        return next();
-      });
-    }
-  )(req, res, next); // Pass req, res, and next to the Passport middleware
-};
+const jwt = require("jsonwebtoken");
+router.get("/user", (req, res) => {
+  let token = req.signedCookies.token;
+  // Check if token exists
+  if (!token) {
+    throw new UnauthenticatedError("Authentication Invalid,Please Log In");
+  }
+  // Decode token
+  const user = jwt.verify(token, process.env.JWT_SECRET);
+  if (user) {
+    res
+      .status(200)
+      .json({ success: true, msg: "Login successful", user: user });
+  } else {
+    res.status(500).json({
+      success: false,
+      msg: "Seems there was an error",
+    });
+  }
+});
 
 router.get(
   "/google",
-  // passport.authenticate("google", )
-  middleware,
-  (req, res) => {}
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 router.get(
@@ -38,7 +35,9 @@ router.get(
     failureRedirect: `${process.env.FRONTEND_LINK}/login`,
   }),
   (req, res) => {
-    console.log("google", req.user);
+    if (req.user) {
+      addCookies({ res, user: req.user });
+    }
     res.redirect(`${process.env.FRONTEND_LINK}`);
   }
 );
@@ -53,22 +52,11 @@ router.route("/github/callback").get(
     failureRedirect: `${process.env.FRONTEND_LINK}/login`,
   }),
   (req, res) => {
+    if (req.user) {
+      addCookies({ res, user: req.user });
+    }
     res.redirect(`${process.env.FRONTEND_LINK}`);
   }
 );
-
-router.get("/user", (req, res) => {
-  const user = req.user;
-  console.log("user", user);
-  if (user) {
-    addCookies({ res, user: user });
-
-    res
-      .status(200)
-      .json({ success: true, msg: "Login successful", user: user });
-  } else {
-    res.status(403).json({ success: false, msg: "Seems there was an error" });
-  }
-});
 
 module.exports = router;

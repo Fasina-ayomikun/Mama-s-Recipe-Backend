@@ -15,6 +15,7 @@ const passport = require("passport");
 const swaggerUi = require("swagger-ui-express");
 const app = express();
 const swaggerDocument = require("./swagger.json");
+const MongoStore = require("connect-mongo");
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(
@@ -37,8 +38,12 @@ app.use(
 app.use(
   expressSession({
     secret: "your_secret_key",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI, // MongoDB connection URL
+      ttl: 7 * 24 * 60 * 60, // Session TTL in seconds (optional)
+    }),
   })
 );
 app.use(passport.initialize());

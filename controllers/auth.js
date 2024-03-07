@@ -98,15 +98,15 @@ const logout = async (req, res, next) => {
         console.log(err);
         return next(err);
       }
-      // Once logout is complete, set cookie and send response
-      res.cookie("token", "logout", {
-        httpOnly: true,
-        expires: new Date(Date.now()),
-      });
-      res
-        .status(200)
-        .json({ success: true, msg: "User successfully logged out" });
     });
+    // Once logout is complete, set cookie and send response
+    res.cookie("token", "logout", {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    });
+    res
+      .status(200)
+      .json({ success: true, msg: "User successfully logged out" });
   } else {
     res.cookie("token", "logout", {
       httpOnly: true,

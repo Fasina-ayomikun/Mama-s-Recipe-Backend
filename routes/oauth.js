@@ -14,7 +14,6 @@ router.get("/user", async (req, res) => {
   // Decode token
   const { userId } = jwt.verify(token, process.env.JWT_SECRET);
   const user = await User.findById(userId);
-  console.log(user);
   if (!user) {
     throw new BadRequestError("Login failed");
   }

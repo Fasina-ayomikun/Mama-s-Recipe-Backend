@@ -110,7 +110,7 @@ const forgotPasswordRequestController = async (req, res) => {
   const { email } = req.body;
   const userExists = await User.findOne({ email });
   if (!userExists) {
-    throw new UnauthenticatedError("Unauthorized to access this route");
+    throw new UnauthenticatedError("Email does not exist");
   }
   const forgotPasswordToken = crypto.randomBytes(20).toString("hex");
   const encryptedToken = crypto

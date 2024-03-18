@@ -12,8 +12,7 @@ const UserSchema = new mongoose.Schema(
     lastName: {
       type: String,
       trim: true,
-      default: "",
-      required: [true, "Please provide your last name"],
+      default: " ",
     },
     displayName: {
       type: String,
